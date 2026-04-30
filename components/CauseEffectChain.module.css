@@ -1,0 +1,375 @@
+/* ==========================================================================
+   CauseEffectChain — Parrot's signature visual element
+   
+   Design language: Editorial data journalism.
+   Amber (global/macro) → Red (personal cost) color shift.
+   Staggered cascade animation. Expand-on-tap detail cards.
+   ========================================================================== */
+
+   .wrapper {
+    margin-top: 3rem;
+  }
+  
+  /* --- Section label with fading rule line --- */
+  .sectionLabel {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.6875rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #f59e0b;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.75rem;
+  }
+  
+  .labelLine {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, rgba(245, 158, 11, 0.25), transparent);
+  }
+  
+  /* --- Chain container with vertical track --- */
+  .chain {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding-left: 0;
+  }
+  
+  /* Background track */
+  .trackLine {
+    position: absolute;
+    left: 27px;
+    top: 28px;
+    bottom: 28px;
+    width: 2px;
+    background: #27272a;
+    z-index: 0;
+    border-radius: 1px;
+  }
+  
+  /* Animated gradient line that fills as nodes appear */
+  .flowLine {
+    position: absolute;
+    left: 27px;
+    top: 28px;
+    width: 2px;
+    background: linear-gradient(to bottom, #f59e0b 0%, #f59e0b 50%, #ef4444 100%);
+    z-index: 1;
+    border-radius: 1px;
+  }
+  
+  /* --- Connector dots between nodes --- */
+  .connector {
+    height: 1.25rem;
+    display: flex;
+    align-items: center;
+    padding-left: 24px;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .connectorDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #27272a;
+  }
+  
+  /* --- Individual node --- */
+  .node {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+    z-index: 2;
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 0;
+    font-family: inherit;
+  
+    /* Entry animation */
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+    transition:
+      opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  
+  .nodeVisible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  
+  /* --- Step number dot --- */
+  .stepDot {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: rgba(245, 158, 11, 0.06);
+    border: 1.5px solid rgba(245, 158, 11, 0.15);
+  }
+  
+  .stepDotPersonal {
+    background: rgba(239, 68, 68, 0.06);
+    border-color: rgba(239, 68, 68, 0.15);
+  }
+  
+  .node:hover .stepDot {
+    transform: scale(1.08);
+    box-shadow: 0 0 28px rgba(245, 158, 11, 0.15);
+  }
+  
+  .node:hover .stepDotPersonal {
+    box-shadow: 0 0 28px rgba(239, 68, 68, 0.12);
+  }
+  
+  .stepNumber {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #f59e0b;
+  }
+  
+  .stepDotPersonal .stepNumber {
+    color: #ef4444;
+  }
+  
+  /* Pulse ring animation on expanded nodes */
+  .pulseRing {
+    position: absolute;
+    inset: -5px;
+    border-radius: 20px;
+    border: 1.5px solid #f59e0b;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  
+  .pulseRingPersonal {
+    border-color: #ef4444;
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 0.2;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.6;
+      transform: scale(1.08);
+    }
+  }
+  
+  /* --- Card --- */
+  .card {
+    flex: 1;
+    padding: 1rem 1.25rem;
+    border-radius: 14px;
+    border: 1px solid #27272a;
+    background: #18181b;
+    transition:
+      border-color 0.3s ease,
+      background 0.3s ease,
+      box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    min-width: 0;
+  }
+  
+  .node:hover .card,
+  .nodeExpanded .card {
+    border-color: #3f3f46;
+    background: #1c1c20;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Left accent bar — hidden by default, visible on hover/expand */
+  .accentBar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: 3px 0 0 3px;
+    background: #f59e0b;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .accentBarPersonal {
+    background: #ef4444;
+  }
+  
+  .node:hover .accentBar,
+  .nodeExpanded .accentBar {
+    opacity: 1;
+  }
+  
+  /* Card header row */
+  .cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .cardTitle {
+    font-weight: 600;
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    color: #fafafa;
+  }
+  
+  .cardValue {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    white-space: nowrap;
+    padding: 0.25rem 0.625rem;
+    border-radius: 6px;
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.1);
+    flex-shrink: 0;
+  }
+  
+  .cardValuePersonal {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+  }
+  
+  /* Expandable detail area */
+  .cardDetail {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition:
+      max-height 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.4s ease,
+      margin-top 0.4s ease;
+    margin-top: 0;
+  }
+  
+  .cardDetailOpen {
+    max-height: 10rem;
+    opacity: 1;
+    margin-top: 0.75rem;
+  }
+  
+  .cardDetail p {
+    font-size: 0.84375rem;
+    line-height: 1.7;
+    color: #a1a1aa;
+  }
+  
+  /* --- Bottom line card --- */
+  .bottomLine {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: 1px solid rgba(239, 68, 68, 0.12);
+    background: linear-gradient(
+      135deg,
+      rgba(239, 68, 68, 0.03),
+      rgba(245, 158, 11, 0.03)
+    );
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.4s,
+      transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.4s;
+  }
+  
+  .bottomLineVisible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .bottomLineLabel {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.625rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #ef4444;
+    margin-bottom: 0.5rem;
+  }
+  
+  .bottomLineText {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: #fafafa;
+  }
+  
+  .bottomLineContext {
+    margin-top: 0.625rem;
+    font-size: 0.8125rem;
+    color: #52525b;
+    line-height: 1.5;
+  }
+  
+  /* --- Tap hint --- */
+  .tapHint {
+    text-align: center;
+    font-size: 0.75rem;
+    color: #3f3f46;
+    margin-top: 1.25rem;
+    opacity: 0;
+    transition: opacity 0.6s ease 0.6s;
+  }
+  
+  .tapHintVisible {
+    opacity: 1;
+  }
+  
+  /* --- Responsive --- */
+  @media (max-width: 640px) {
+    .stepDot {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+    }
+  
+    .trackLine,
+    .flowLine {
+      left: 21px;
+    }
+  
+    .connector {
+      padding-left: 18px;
+    }
+  
+    .stepNumber {
+      font-size: 0.75rem;
+    }
+  
+    .node {
+      gap: 0.875rem;
+    }
+  
+    .card {
+      padding: 0.875rem 1rem;
+    }
+  
+    .cardTitle {
+      font-size: 0.875rem;
+    }
+  
+    .cardValue {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+    }
+  
+    .bottomLineText {
+      font-size: 1.1rem;
+    }
+  }
