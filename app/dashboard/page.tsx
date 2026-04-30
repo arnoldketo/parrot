@@ -33,6 +33,7 @@ interface ExplainerData {
     fuelType: string;
     annualMileage: number;
   };
+  source: "live" | "cached" | "fallback";
 }
 
 export default function Dashboard() {
@@ -176,6 +177,22 @@ export default function Dashboard() {
               </span>
             </div>
           ))}
+          <div
+            className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs ${
+              data.source === "live"
+                ? "border-emerald-500/20 bg-emerald-500/5 text-emerald-500/70"
+                : "border-zinc-700 bg-zinc-800 text-zinc-500"
+            }`}
+          >
+            <span
+              className={`inline-block h-1.5 w-1.5 rounded-full ${
+                data.source === "live"
+                  ? "animate-pulse bg-emerald-500"
+                  : "bg-zinc-500"
+              }`}
+            />
+            {data.source === "live" ? "Live data" : "Sample data"}
+          </div>
           <div className="flex items-center gap-1.5 rounded-lg border border-amber-500/20 bg-amber-500/5 px-3 py-2 text-xs text-amber-500/70">
             <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500" />
             Live

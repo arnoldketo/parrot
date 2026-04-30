@@ -125,6 +125,7 @@ The chain should have exactly 5 nodes showing the cause-and-effect from geopolit
         fuelType: profile.car_fuel_type,
         annualMileage: profile.annual_mileage,
       },
+      source: fuelData.source,
     });
   } catch (err) {
     console.error("Explainer API error:", err);
